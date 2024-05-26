@@ -10,6 +10,7 @@ export const Landing = () => {
     useState<MediaStreamTrack | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const [hotReloaded, setHotReloaded] = useState(true);
   const [joined, setJoined] = useState(false);
 
   const getCam = async () => {
@@ -29,6 +30,9 @@ export const Landing = () => {
 
   useEffect(() => {
     getCam();
+    fetch("https://omniegli.onrender.com").then(() => {
+      setHotReloaded(false);
+    });
   }, []);
 
   function sendToNewRoom() {
@@ -46,7 +50,8 @@ export const Landing = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 relative">
-      {!joined ? (
+      {hotReloaded && <h1>The APP is hot reloading</h1>}
+      {!hotReloaded && !joined && (
         <>
           <h1 className="flex text-3xl font-bold mt-4">Omniegli Room</h1>
           <div className="flex flex-col items-center">
@@ -85,7 +90,8 @@ export const Landing = () => {
             </>
           )}
         </>
-      ) : (
+      )}
+      {joined && (
         <Room
           name={name}
           localAudioTrack={localAudioTrack}
