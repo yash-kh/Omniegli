@@ -171,6 +171,7 @@ export const Room = ({
     });
 
     setSocket(newSocket);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
   useEffect(() => {
@@ -180,6 +181,7 @@ export const Room = ({
         localVideoRef.current.play();
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localVideoRef]);
 
   return (
@@ -198,6 +200,7 @@ export const Room = ({
       </button>
       <div className="flex justify-center items-center">
         <div className="mr-4">
+          {/* @ts-ignore */}
           <video autoPlay width={400} height={400} ref={localVideoRef} />
         </div>
         {lobby ? (
@@ -217,6 +220,7 @@ export const Room = ({
           </div>
         ) : (
           <div>
+            {/* @ts-ignore */}
             <video autoPlay width={400} height={400} ref={remoteVideoRef} />
           </div>
         )}
