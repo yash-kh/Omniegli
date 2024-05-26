@@ -31,6 +31,6 @@ io.on('connection', (socket: Socket) => {
 });
 
 // Set the Express app to listen on port 3000
-server.listen(4000, () => {
-  console.log('listening on *:4000');
+server.listen(process.env.PORT || 4000, () => {
+  console.log(`listening on *:${process.env.PORT || 4000}`);
 });
