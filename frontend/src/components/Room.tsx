@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 
-const URL = process.env.REACT_APP_URL ||"http://localhost:4000";
+const URL = "https://omniegli.onrender.com";
 
 export const Room = ({
   name,
