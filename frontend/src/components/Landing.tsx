@@ -30,7 +30,7 @@ export const Landing = () => {
 
   useEffect(() => {
     getCam();
-    fetch("https://omniegli.onrender.com").then(() => {
+    fetch(import.meta.env.VITE_BASE_URL).then(() => {
       setHotReloaded(false);
     });
   }, []);

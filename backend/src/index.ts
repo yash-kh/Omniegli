@@ -32,7 +32,7 @@ const userManager = new UserManager();
 // Set up a connection event for Socket.IO
 io.on('connection', (socket: Socket) => {
   console.log('a user connected');
-  userManager.addUser("randomName", socket);
+  userManager.addUser(String(socket.handshake.query.name) || "Anonymous", socket);
 
   socket.on('disconnect', () => {
     console.log('user disconnected');

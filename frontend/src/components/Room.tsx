@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 
-const URL = "https://omniegli.onrender.com";
+const URL = import.meta.env.VITE_BASE_URL;
 
 export const Room = ({
   name,
@@ -28,7 +28,7 @@ export const Room = ({
 
   useEffect(() => {
     if (socket) return;
-    const newSocket = io(URL);
+    const newSocket = io(URL, { query: { name } });
     newSocket.on("send-offer", async ({ roomId }) => {
       console.log("sending offer");
       setLobby(false);

@@ -22,6 +22,14 @@ export class RoomManager {
             user2,
         })
 
+        user1.socket.emit("message", {
+            msg: `Hi, My name is ${user2.name}.`
+        })
+
+        user2.socket.emit("message", {
+            msg: `Hi, My name is ${user1.name}.`
+        })
+
         user1.socket.emit("send-offer", {
             roomId
         })

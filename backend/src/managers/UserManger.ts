@@ -36,7 +36,7 @@ export class UserManager {
             }
             return x.socket.id !== socketId
         });
-        this.queue = this.queue.filter(x => x === socketId);
+        this.queue = this.queue.filter(x => x !== socketId);
         if(roomId) {
             let user2Socket = this.users.find(x => x.roomId === roomId)?.socket;
             if (user2Socket) {
