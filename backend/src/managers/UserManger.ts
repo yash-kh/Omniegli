@@ -80,6 +80,10 @@ export class UserManager {
         socket.on("add-ice-candidate", ({candidate, roomId, type}) => {
             this.roomManager.onIceCandidates(roomId, socket.id, candidate, type);
         });
+
+        socket.on("message", ({msg, from, roomId}) => {
+            this.roomManager.onMessage(roomId, msg, from, socket.id);
+        });
     }
 
 }

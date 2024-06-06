@@ -16,8 +16,16 @@ export const Room = ({
   sendToNewRoom: () => void;
   exitRoom: () => void;
 }) => {
+  interface MessageObj {
+    msg: string;
+    from: string;
+  }
+
   const [lobby, setLobby] = useState(true);
+  const [messagesArr, setMessagesArr] = useState<MessageObj[]>([]);
+  const [newMessage, setNewMessage] = useState("");
   const [socket, setSocket] = useState<null | Socket>(null);
+  const [roomID, setRoomID] = useState<null | string>(null);
   const [, setSendingPc] = useState<null | RTCPeerConnection>(null);
   const [, setReceivingPc] = useState<null | RTCPeerConnection>(null);
   const [, setRemoteVideoTrack] = useState<MediaStreamTrack | null>(null);
@@ -30,6 +38,7 @@ export const Room = ({
     if (socket) return;
     const newSocket = io(URL, { query: { name } });
     newSocket.on("send-offer", async ({ roomId }) => {
+      setRoomID(roomId);
       console.log("sending offer");
       setLobby(false);
       const pc = new RTCPeerConnection();
@@ -72,6 +81,10 @@ export const Room = ({
       console.log("going to lobby");
       newSocket.disconnect();
       sendToNewRoom();
+    });
+
+    newSocket.on("message", (obj: MessageObj) => {
+      setMessagesArr((prevMessagesArr) => [obj, ...prevMessagesArr]);
     });
 
     newSocket.on("offer", async ({ roomId, sdp: remoteSdp }) => {
@@ -171,7 +184,7 @@ export const Room = ({
     });
 
     setSocket(newSocket);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
   useEffect(() => {
@@ -181,8 +194,22 @@ export const Room = ({
         localVideoRef.current.play();
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localVideoRef]);
+
+  const sendMessage = () => {
+    if (newMessage.trim() === "") return;
+
+    const messageObj = {
+      msg: newMessage,
+      from: name || "Anonymous",
+      roomId: roomID,
+    };
+    socket?.emit("message", messageObj);
+    messageObj.from = "You";
+    setMessagesArr([messageObj, ...messagesArr]);
+    setNewMessage("");
+  };
 
   return (
     <>
@@ -228,9 +255,40 @@ export const Room = ({
       <div className="flex">
         {lobby ? (
           <div className="ml-4">
-            Hi {name}, Waiting to connect you to someone
+            Hi {name || "Anonymous"}, Waiting to connect you to someone
           </div>
         ) : null}
+      </div>
+      <div className="flex flex-col items-center mt-4 w-full">
+        <div className="w-full max-w-md h-64 overflow-y-scroll border p-2 mb-2">
+          {messagesArr.map((message, index) => (
+            <div key={index} className="mb-1">
+              <strong>{message.from}: </strong>
+              <span>{message.msg}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex w-full max-w-md">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (!lobby && e.key === "Enter") {
+                sendMessage();
+              }
+            }}
+            className="border rounded-l py-2 px-3 w-full"
+            placeholder="Type your message..."
+          />
+          <button
+            onClick={sendMessage}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r"
+            disabled={lobby}
+          >
+            Send
+          </button>
+        </div>
       </div>
     </>
   );

@@ -23,11 +23,13 @@ export class RoomManager {
         })
 
         user1.socket.emit("message", {
-            msg: `Hi, My name is ${user2.name}.`
+            msg: `Hi, My name is ${user2.name}.`,
+            from: `${user2.name}`
         })
 
         user2.socket.emit("message", {
-            msg: `Hi, My name is ${user1.name}.`
+            msg: `Hi, My name is ${user1.name}.`,
+            from: `${user1.name}`
         })
 
         user1.socket.emit("send-offer", {
@@ -71,6 +73,15 @@ export class RoomManager {
         }
         const receivingUser = room.user1.socket.id === senderSocketid ? room.user2: room.user1;
         receivingUser.socket.emit("add-ice-candidate", ({candidate, type}));
+    }
+
+    onMessage(roomId: string, msg: string, from: string, socketId: string) {
+        const room = this.rooms.get(roomId);
+        if (!room) {
+            return;
+        }
+        const receivingUser = room.user1.socket.id === socketId ? room.user2: room.user1;
+        receivingUser.socket.emit("message", ({msg, from}));
     }
 
     generate() {
